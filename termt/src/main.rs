@@ -7,9 +7,9 @@ use crossterm::{
     terminal, ExecutableCommand, QueueableCommand,
 };
 use std::error::Error;
+use std::io;
 use std::io::Write;
-use std::time::Duration;
-use std::{io, thread};
+use std::time::{Duration, Instant};
 
 mod render;
 
@@ -18,12 +18,13 @@ mod render;
 fn main() -> Result<(), Box<dyn Error>> {
     // Terminal
     let mut stdout = io::stdout();
-    let mut x = 1;
-    let mut last_x = 0;
+    let mut y = 0;
+    let mut last_y = 0;
     terminal::enable_raw_mode()?;
     stdout.execute(EnterAlternateScreen)?;
     stdout.execute(Hide)?;
 
+    let mut instant = Instant::now();
     // Game loop
     'gameloop: loop {
         // Input
@@ -38,18 +39,21 @@ fn main() -> Result<(), Box<dyn Error>> {
             }
         }
 
-        // Updates
-        thread::sleep(Duration::from_millis(1000));
-        render::print_border(&mut stdout)?;
-        stdout.queue(cursor::MoveTo(x, 5))?;
-        stdout.queue(style::PrintStyledContent("█".magenta()))?;
-        stdout.queue(cursor::MoveTo(last_x, 5))?;
-        stdout.queue(style::PrintStyledContent(" ".magenta()))?;
-        stdout.flush()?;
-        last_x = x;
-        x += 1;
-        if x > 100 {
-            x = 0;
+        // Time to move down yet?
+        let refresh_time = Duration::from_secs(1);
+        if instant.elapsed() > refresh_time {
+            render::print_border(&mut stdout)?;
+            stdout.queue(cursor::MoveTo(15, last_y))?;
+            stdout.queue(style::PrintStyledContent(" ".magenta()))?;
+            stdout.queue(cursor::MoveTo(15, y))?;
+            stdout.queue(style::PrintStyledContent("█".magenta()))?;
+            stdout.flush()?;
+            last_y = y;
+            y += 1;
+            if y > 24 {
+                y = 0;
+            }
+            instant = Instant::now();
         }
     }
 
