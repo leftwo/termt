@@ -116,8 +116,6 @@ fn main() -> Result<(), Box<dyn Error>> {
                     sleep(Duration::from_secs(1));
                 }
                 p.reset();
-            } else {
-                render::print_msg(&mut stdout, "down ok");
             }
             //render::print_board(&mut stdout, &board)?;
             render::print_piece(&mut stdout, &p)?;

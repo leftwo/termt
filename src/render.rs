@@ -11,7 +11,7 @@ use super::*;
 pub fn print_msg(stdout: &mut Stdout, msg: &str) {
     stdout.queue(cursor::MoveTo(20, 7)).unwrap();
     stdout
-        .queue(style::PrintStyledContent(msg.black()))
+        .queue(style::PrintStyledContent(msg.white()))
         .unwrap();
 }
 
@@ -22,27 +22,29 @@ pub fn print_board(
     game_over: bool,
     print_empty: bool,
 ) -> Result<(), Box<dyn Error>> {
-    stdout.queue(cursor::MoveTo(20, 0))?;
-    stdout.queue(style::PrintStyledContent("q to quit".black()))?;
     stdout.queue(cursor::MoveTo(20, 1))?;
-    stdout.queue(style::PrintStyledContent("a Left".black()))?;
+    stdout.queue(style::PrintStyledContent("a Left".white()))?;
     stdout.queue(cursor::MoveTo(20, 2))?;
-    stdout.queue(style::PrintStyledContent("d Right".black()))?;
+    stdout.queue(style::PrintStyledContent("d Right".white()))?;
     stdout.queue(cursor::MoveTo(20, 3))?;
-    stdout.queue(style::PrintStyledContent("s Down".black()))?;
+    stdout.queue(style::PrintStyledContent("s Down".white()))?;
+    stdout.queue(cursor::MoveTo(20, 4))?;
+    stdout.queue(style::PrintStyledContent("w Rotate".white()))?;
+    stdout.queue(cursor::MoveTo(20, 6))?;
+    stdout.queue(style::PrintStyledContent("q to quit".white()))?;
 
     if game_over {
-        stdout.queue(cursor::MoveTo(20, 5))?;
-        stdout.queue(style::PrintStyledContent("GAME OVER".black()))?;
+        stdout.queue(cursor::MoveTo(20, 8))?;
+        stdout.queue(style::PrintStyledContent("GAME OVER".white()))?;
     }
 
     for y in 0..board[0].len() {
         for x in 0..board.len() {
             stdout.queue(cursor::MoveTo(x as u16, y as u16))?;
             if board[x][y] {
-                stdout.queue(style::PrintStyledContent("b".black()))?;
+                stdout.queue(style::PrintStyledContent("b".white()))?;
             } else if print_empty {
-                stdout.queue(style::PrintStyledContent(" ".black()))?;
+                stdout.queue(style::PrintStyledContent(" ".white()))?;
             }
         }
     }
@@ -64,7 +66,7 @@ pub fn print_piece(
                         (p.last_x + x) as u16,
                         (p.last_y + y) as u16)
                     )?;
-                    stdout.queue(style::PrintStyledContent(" ".white()))?;
+                    stdout.queue(style::PrintStyledContent(" ".black()))?;
                 }
             }
         }
@@ -81,7 +83,7 @@ pub fn print_piece(
                         (p.last_x + x) as u16,
                         (p.last_y + y) as u16)
                     )?;
-                    stdout.queue(style::PrintStyledContent(" ".white()))?;
+                    stdout.queue(style::PrintStyledContent(" ".black()))?;
                 }
             }
         }
@@ -95,7 +97,7 @@ pub fn print_piece(
                     (p.x + x) as u16,
                     (p.y + y) as u16)
                 )?;
-                stdout.queue(style::PrintStyledContent("#".black()))?;
+                stdout.queue(style::PrintStyledContent("#".white()))?;
             }
         }
     }
